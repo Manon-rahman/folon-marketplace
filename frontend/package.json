@@ -1,0 +1,29 @@
+{
+  "name": "ecommerce-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "preview": "nuxt preview",
+    "typecheck": "nuxt typecheck",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@pinia-plugin-persistedstate/nuxt": "^1.2.1",
+    "@pinia/nuxt": "^0.5.5",
+    "@stripe/stripe-js": "^4.2.0",
+    "@vueuse/nuxt": "^10.11.1",
+    "axios": "^1.7.3",
+    "nuxt": "^3.12.4",
+    "pinia": "^2.2.0",
+    "vue": "^3.4.34",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@nuxtjs/tailwindcss": "^6.12.1",
+    "@types/node": "^20.14.10",
+    "typescript": "^5.5.3",
+    "vitest": "^2.0.4"
+  }
+}

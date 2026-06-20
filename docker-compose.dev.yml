@@ -1,0 +1,48 @@
+version: '3.9'
+
+services:
+  folon-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: folon
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - folon_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - '5433:5432'
+
+  folon-marketplace:
+    build:
+      context: ./folon-marketplace
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./folon-marketplace:/app        # live source mount — no rebuild needed for code changes
+      - /app/node_modules               # keep container's node_modules
+      - /app/.next                      # keep container's build cache
+      - folon_uploads:/app/public/uploads
+    depends_on:
+      folon-db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@folon-db:5432/folon
+      SESSION_SECRET: ${SESSION_SECRET:-dev-session-secret-32-chars-minimum!}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-manonrahman9@gmail.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
+      APP_ID: ${APP_ID:-folon}
+      APP_NAME: ${APP_NAME:-Folon Marketplace}
+      NEXT_PUBLIC_APP_NAME: ${NEXT_PUBLIC_APP_NAME:-Folon Marketplace}
+      NEXT_PUBLIC_PRIMARY_COLOR: ${NEXT_PUBLIC_PRIMARY_COLOR:-#4CA771}
+      NEXT_PUBLIC_BASE_URL: http://localhost:3000
+      NODE_ENV: development
+    ports:
+      - '3000:3000'
+
+volumes:
+  folon_postgres_data:
+  folon_uploads:

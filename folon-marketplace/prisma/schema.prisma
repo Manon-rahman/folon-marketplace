@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Category {
+  id           String    @id @default(cuid())
+  name         String
+  slug         String    @unique
+  displayOrder Int       @default(0)
+  visible      Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  products     Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id             String      @id @default(cuid())
+  name           String
+  description    String?
+  images         String[]
+  price          Int
+  compareAtPrice Int?
+  bundle5Price   Int?
+  bundle10Price  Int?
+  stock          Int         @default(0)
+  visible        Boolean     @default(true)
+  source         String      @default("manual")
+  krishopSkuId   String?     @unique
+  categoryId     String?
+  category       Category?   @relation(fields: [categoryId], references: [id])
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  orderItems     OrderItem[]
+
+  @@map("products")
+}
+
+model Order {
+  id             String      @id @default(cuid())
+  customerName   String
+  customerPhone  String
+  customerArea   String
+  subtotal       Int
+  discountAmount Int         @default(0)
+  deliveryFee    Int         @default(0)
+  total          Int
+  promoCodeUsed  String?
+  paymentMethod  String
+  status         String      @default("pending_payment")
+  bkashPaymentId String?
+  bkashTrxId     String?
+  notes          String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  items          OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id])
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  name      String
+  price     Int
+  quantity  Int
+
+  @@map("order_items")
+}
+
+model PromoCode {
+  id             String    @id @default(cuid())
+  code           String    @unique
+  type           String
+  value          Int
+  minOrderAmount Int       @default(0)
+  maxUses        Int?
+  usedCount      Int       @default(0)
+  active         Boolean   @default(true)
+  expiresAt      DateTime?
+  createdAt      DateTime  @default(now())
+
+  @@map("promo_codes")
+}
+
+model Banner {
+  id           String   @id @default(cuid())
+  imageUrl     String
+  linkUrl      String?
+  displayOrder Int      @default(0)
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  @@map("banners")
+}
+
+model Setting {
+  key   String @id
+  value String
+
+  @@map("settings")
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  @@map("admin_users")
+}
