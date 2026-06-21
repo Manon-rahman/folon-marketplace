@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import Image from 'next/image'
+import SmartImage from '@/components/ui/SmartImage'
 import Link from 'next/link'
 
 interface Banner {
@@ -47,7 +47,7 @@ export default function BannerCarousel({ banners }: { banners: Banner[] }) {
       >
         {banners.map((banner, i) => {
           const slide = (
-            <Image
+            <SmartImage
               key={banner.id}
               src={banner.imageUrl}
               alt={`Banner ${i + 1}`}

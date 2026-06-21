@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import Image from 'next/image'
+import SmartImage from '@/components/ui/SmartImage'
 import { useRouter } from 'next/navigation'
 import { formatPrice } from '@/lib/utils'
 import { addToCart } from '@/lib/cart/store'
@@ -50,7 +50,7 @@ export default function ProductCard({ product }: { product: Product }) {
         {/* Image */}
         <div className="relative aspect-square bg-gray-50 overflow-hidden">
           {product.images[0] ? (
-            <Image
+            <SmartImage
               src={product.images[0]}
               alt={product.name}
               fill

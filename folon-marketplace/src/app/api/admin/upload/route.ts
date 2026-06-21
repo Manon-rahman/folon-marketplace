@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/auth/session'
-import path from 'path'
-import fs from 'fs/promises'
+import sharp from 'sharp'
 
 export async function POST(req: NextRequest) {
   try {
@@ -22,20 +21,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Image must be under 5 MB' }, { status: 400 })
   }
 
-  const ext = file.name.split('.').pop()?.toLowerCase() ?? 'jpg'
-  const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-
-  // Use Vercel Blob in production / when token is configured
+  // Use Vercel Blob when token is configured
   if (process.env.BLOB_READ_WRITE_TOKEN) {
+    const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`
     const { put } = await import('@vercel/blob')
     const blob = await put(`products/${filename}`, file, { access: 'public' })
     return NextResponse.json({ url: blob.url })
   }
 
-  // Local fallback: save to public/uploads/ (dev only)
-  const uploadDir = path.join(process.cwd(), 'public', 'uploads')
-  await fs.mkdir(uploadDir, { recursive: true })
+  // Compress with sharp and store as base64 data URL in the database
   const buffer = Buffer.from(await file.arrayBuffer())
-  await fs.writeFile(path.join(uploadDir, filename), buffer)
-  return NextResponse.json({ url: `/uploads/${filename}` })
+  const compressed = await sharp(buffer)
+    .resize({ width: 900, height: 900, fit: 'inside', withoutEnlargement: true })
+    .jpeg({ quality: 82 })
+    .toBuffer()
+  const base64 = `data:image/jpeg;base64,${compressed.toString('base64')}`
+  return NextResponse.json({ url: base64 })
 }

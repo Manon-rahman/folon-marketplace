@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic'
 import { prisma } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import { formatPrice } from '@/lib/utils'
-import Image from 'next/image'
+import SmartImage from '@/components/ui/SmartImage'
 import AddToCartButton from '@/components/storefront/AddToCartButton'
 import ProductStockBadge from '@/components/storefront/ProductStockBadge'
 import BackLink from '@/components/storefront/BackLink'
@@ -23,7 +23,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
 
       <div className="relative aspect-square bg-gray-50">
         {product.images[0] ? (
-          <Image
+          <SmartImage
             src={product.images[0]}
             alt={product.name}
             fill
@@ -72,7 +72,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
           <div className="flex gap-2 mt-6 overflow-x-auto pb-2">
             {product.images.slice(1).map((img, i) => (
               <div key={i} className="relative w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 bg-gray-50">
-                <Image src={img} alt={`${product.name} ${i + 2}`} fill className="object-cover" sizes="80px" />
+                <SmartImage src={img} alt={`${product.name} ${i + 2}`} fill className="object-cover" sizes="80px" />
               </div>
             ))}
           </div>
